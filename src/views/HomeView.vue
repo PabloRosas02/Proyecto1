@@ -4,26 +4,48 @@ import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { useRouter } from 'vue-router';
 
+import { useToast } from 'primevue/usetoast' //Importar hook
+
 
 const router = useRouter()
+
+const toast = useToast() //inicializar toast
+
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 
 const handleLogin = async() => {
   loading.value = true
-  const { data, error }= await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value,
   })
 
-  if(error){
-    alert('Error: ' + error.message)
+  loading.value = false
+
+  if (error) {
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error de acceso', 
+      detail: error.message, 
+      life: 3000 
+    })
+  } else {
+    // Mostrar mensaje de éxito
+    toast.add({ 
+      severity: 'success', 
+      summary: '¡Bienvenido!', 
+      detail: 'Login exitoso', 
+      life: 2000 
+    })
+
+    // Esperar un poco antes de redirigir para que el usuario vea el mensaje
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 1000)
   }
-  else{
-    console.log('Usuario logueado:', data.user)
-    router.push('/dashboard') //Redirigiar a una pagina privada
-  }
+  
 }
 </script>
 

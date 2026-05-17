@@ -3,6 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
+  <Toast />
   <header>
     <nav style="padding: 20px; text-align: center;">
       <RouterLink to="/login">Login</RouterLink> | 
