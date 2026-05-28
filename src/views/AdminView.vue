@@ -199,27 +199,28 @@ onMounted(() => {
       
       <div class="field mb-4">
         <label for="name" class="block mb-2 font-bold">Nombre Completo</label>
-        <InputText id="name" v-model.trim="user.fullname" required="true" :class="{'p-invalid': submitted && !user.fullname}" placeholder="Ej. Juan Pérez" />
-        <small class="p-error" v-if="submitted && !user.fullname">El nombre es obligatorio.</small>
+        <InputText id="name" v-model.trim="user.fullname" :class="{'p-invalid': submitted && !user.fullname}" placeholder="Ej. Juan Pérez" fluid />
+        <small class="validation-msg" v-if="submitted && !user.fullname">El nombre es obligatorio.</small>
       </div>
 
       <div v-if="!isEditing">
         <div class="field mb-4">
           <label for="email" class="block mb-2 font-bold">Correo Electrónico</label>
-          <InputText id="email" v-model.trim="user.mail" required="true" :class="{'p-invalid': submitted && !user.mail}" placeholder="correo@ejemplo.com" />
-          <small class="p-error" v-if="submitted && !user.mail">El correo es obligatorio para nuevos registros.</small>
+          <InputText id="email" v-model.trim="user.mail" :class="{'p-invalid': submitted && !user.mail}" placeholder="correo@ejemplo.com" fluid />
+          <small class="validation-msg" v-if="submitted && !user.mail">El correo es obligatorio para nuevos registros.</small>
         </div>
 
         <div class="field mb-4">
           <label for="password" class="block mb-2 font-bold">Contraseña Temporal</label>
-          <Password id="password" v-model="user.password" toggleMask :feedback="false" placeholder="Min. 6 caracteres" />
+          <Password id="password" v-model="user.password" toggleMask :feedback="false" :class="{'p-invalid': submitted && !user.password}" placeholder="Min. 6 caracteres" fluid />
+          <small class="validation-msg" v-if="submitted && !user.password">La contraseña temporal es obligatoria.</small>
         </div>
       </div>
 
       <div class="field mb-4">
         <label for="worker" class="block mb-2 font-bold">Número de Empleado</label>
-        <InputNumber id="worker" v-model="user.num_worker" :useGrouping="false" placeholder="123456" />
-        <small class="p-error" v-if="submitted && !user.num_worker">El número de nómina es obligatorio.</small>
+        <InputNumber id="worker" v-model="user.num_worker" :useGrouping="false" :class="{'p-invalid': submitted && !user.num_worker}" placeholder="123456" fluid />
+        <small class="validation-msg" v-if="submitted && !user.num_worker">El número de nómina es obligatorio.</small>
       </div>
 
       <div class="field mb-4">
@@ -231,6 +232,7 @@ onMounted(() => {
           optionLabel="label" 
           optionValue="value" 
           placeholder="Selecciona un rol" 
+          fluid
         />
       </div>
 
@@ -273,7 +275,7 @@ onMounted(() => {
 }
 
 .p-button-vue {
-  background-color: #42b883 !important; /* Verde Vue */
+  background-color: #42b883 !important; 
   border-color: #42b883 !important;
 }
 
@@ -281,7 +283,7 @@ onMounted(() => {
   color: var(--color-text);
 }
 
-/* Ajustes para que la tabla use tus variables de base.css */
+/* Sincronización de componentes globales con variables base.css */
 :deep(.p-datatable-thead > tr > th) {
   background: var(--color-background);
   color: var(--color-heading);
@@ -293,7 +295,7 @@ onMounted(() => {
   color: var(--color-text);
 }
 
-:deep(.p-inputtext), :deep(.p-dropdown), :deep(.p-inputnumber-input) {
+:deep(.p-inputtext), :deep(.p-dropdown), :deep(.p-inputnumber-input), :deep(.p-password-input) {
   background: var(--color-background);
   color: var(--color-text);
   border: 1px solid var(--color-border);
@@ -307,5 +309,33 @@ onMounted(() => {
 :deep(.p-dialog-header), :deep(.p-dialog-content), :deep(.p-dialog-footer) {
   background: var(--color-background);
   color: var(--color-text);
+}
+
+/* Reestructurar flexbox dentro del contenedor p-fluid */
+:deep(.p-fluid .field) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Forzar la expansión horizontal total de todos los componentes de PrimeVue */
+:deep(.p-fluid .field > .p-inputtext),
+:deep(.p-fluid .field > .p-inputnumber),
+:deep(.p-fluid .field > .p-password),
+:deep(.p-fluid .field > .p-dropdown) {
+  width: 100% !important;
+}
+
+/* Forzar el mensaje de error condicional debajo del input de manera limpia */
+.validation-msg {
+  color: #ff5252; 
+  display: block;
+  width: 100% !important;
+  margin-top: 0.35rem;
+  margin-left: 0 !important;
+  font-size: 0.85rem;
+  text-align: left;
+  line-height: 1.3;
 }
 </style>

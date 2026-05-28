@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import AdminView from '@/views/AdminView.vue'
-//import DashboardView from '..view/DashBoardView.vue' //Aqui es donde ira la parte principal
+import { supabase } from '@/lib/supabaseClient'
 
 
 const router = createRouter({
@@ -15,20 +13,80 @@ const router = createRouter({
       path: '/login', 
       name: 'login',
       component: () => import('../views/HomeView.vue'), //Importacion directa
+      meta: {requiresGuest: true} //Evitar que una vez logueado vuelva a ver el Login
     },
     {//Registro
       path: '/register',
       name: 'register',
       component: () => import('../views/AboutView.vue'), //Importacion 
+      meta: {requiresGuest: true} //Igual que el Login
     },
     {
       path: '/admin',
       name: 'admin',
       component: () => import('../views/AdminView.vue'),
-      // Opcional: Podrías añadir meta: { requiresAdmin: true } después
+      meta: {requiresAdmin: true}
     },
     
   ],
 })
+
+router.beforeEach(async (to, from,) => {
+  // Obtener la sesión activa de Supabase
+  const { data: { session } } = await supabase.auth.getSession()
+  const isAuthenticated = !!session
+
+  // Proteger ruta de Administrador
+  if (to.matched.some(record => record.meta.requiresAdmin)) {
+    if (!isAuthenticated) {
+      return '/login'
+    }
+
+    try{
+      const{data} = await supabase
+      .from('users_reg')
+      .select('rol')
+      .eq('id',session.user.id)
+      .single()
+
+      if(data?.rol === 'admin'){
+        return true //Permitir acceso
+      }
+      else{
+        return '/login' //No permitir si no es admin -----------SUGETA A CAMBIOS DEPENDIENDO DEL ROL-----------------
+      }
+    }
+    catch(err){
+      return '/login'
+    }
+  }
+
+  // Redirección inteligente si ya está logueado e intenta ir a Login/Register
+  if (to.matched.some(record => record.meta.requiresGuest)) {
+    if (isAuthenticated) {
+      try{
+        const {data} = await supabase
+        .from('users_reg')
+        .select('rol')
+        .eq('id', session.user.id)
+        .single()
+
+        if(data?.rol === 'admin'){
+          return '/admin'
+        }
+        else{
+          return '/login' //ruta de para el rol de los trabajadores
+        }
+      }
+      catch{
+        return '/login'
+      }
+    }
+  }
+
+  //Permitir la navegacion libre en cuaquier otra ruta
+  return true
+})
+
 
 export default router
