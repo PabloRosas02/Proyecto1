@@ -21,6 +21,12 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue'), //Importacion 
       meta: {requiresGuest: true} //Igual que el Login
     },
+    {//Registro
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('../views/Dashboard.vue'), //Importacion 
+      meta: {requiresGuest: true} //Igual que el Login
+    },
     {
       path: '/admin',
       name: 'admin',

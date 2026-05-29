@@ -22,7 +22,7 @@ const handleLogin = async() => {
   }
   loading.value = true
   try {
-    // 1. Autenticar al usuario en Supabase Auth
+    // Autenticar al usuario en Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
@@ -40,7 +40,7 @@ const handleLogin = async() => {
 
       if (userError) throw userError
 
-      // 3. Evaluar el rol y redirigir
+      //Evaluar el rol y redirigir
       if (userData?.rol === 'admin') {
         toast.add({ severity: 'success', summary: 'Bienvenido', detail: 'Sesión de Administrador iniciada', life: 2000 })
         router.push('/admin') //Tu ruta hacia AdminView
